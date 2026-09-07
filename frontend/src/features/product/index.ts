@@ -1,0 +1,5 @@
+export { default as ProductCard } from './ui/ProductCard.vue'
+export { default as ProductDetailsSkeleton } from './ui/ProductDetailsSkeleton.vue'
+export { default as ProductDetailsError } from './ui/ProductDetailsError.vue'
+export { default as ProductBaseInfo } from './ui/ProductBaseInfo.vue'
+export { default as ProductInfo } from './ui/ProductInfo.vue'
