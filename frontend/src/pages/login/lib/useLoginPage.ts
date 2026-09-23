@@ -1,6 +1,7 @@
 import { useRouter } from 'vue-router'
 import { useLoginUser, useUserStore } from '@/entities/user'
 import { reactive, ref } from 'vue'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@/shared'
 
 interface Form {
   email: string
@@ -21,13 +22,12 @@ export const useLoginPage = () => {
 
   const handleLogin = async () => {
     error.value = false
-
     try {
       const authResponse = await login.mutateAsync({ ...form })
-
-      localStorage.setItem('user', JSON.stringify(authResponse))
-      userStore.setUser(authResponse)
-
+      if (!authResponse) return
+      localStorage.setItem(ACCESS_TOKEN_KEY, authResponse.accessToken)
+      localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.refreshToken)
+      userStore.setUser(authResponse.user)
       await router.push({ name: 'home' })
     } catch (e) {
       console.log(e)

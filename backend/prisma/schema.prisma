@@ -30,9 +30,10 @@ model User {
   phone        String?
   role         Role           @default(USER)
   createdAt    DateTime       @default(now())
-  orders       Order[]
+  orders        Order[]
   notifications Notification[]
   refreshTokens RefreshToken[]
+  cartItems     CartItem[]
 }
 
 model RefreshToken {
@@ -66,10 +67,26 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  cartItems CartItem[]
+
   @@index([categoryId])
   @@index([isPublished])
   @@index([price])
   @@index([createdAt])
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
 }
 
 model Order {

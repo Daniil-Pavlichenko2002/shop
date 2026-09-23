@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ArrowDown } from '@element-plus/icons-vue'
+import { storeToRefs } from 'pinia'
+import { useCartStore } from '@/entities/cart/store/cartStore'
+
+const { totalCount } = storeToRefs(useCartStore())
 </script>
 
 <template>
   <el-header class="bg-white border-b border-gray-200 sticky top-0 z-30 h-16">
-    <div class="max-w-[1440px] mx-auto px-6 h-full flex items-center justify-between">
-      <router-link to="/" class="text-2xl font-bold text-blue-600 tracking-tight"
+    <div
+      class="max-w-[1440px] mx-auto px-6 h-full flex items-center justify-between"
+    >
+      <router-link
+        to="/"
+        class="text-2xl font-bold text-blue-600 tracking-tight"
         >ShopMVP</router-link
       >
 
@@ -21,8 +29,9 @@ import { ArrowDown } from '@element-plus/icons-vue'
         >
           Корзина
           <span
+            v-if="totalCount"
             class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold leading-none"
-            >2</span
+            >{{ totalCount }}</span
           >
         </router-link>
         <router-link

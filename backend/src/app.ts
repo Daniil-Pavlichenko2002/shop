@@ -6,6 +6,7 @@ import { authRouter } from "./routes/auth";
 import { usersRouter } from "./routes/users";
 import { categoriesRouter, productsRouter } from "./routes/catalog";
 import { ordersRouter } from "./routes/orders";
+import { cartRouter } from "./routes/cart";
 import { notificationsRouter } from "./routes/notifications";
 
 export function createApp() {
@@ -28,6 +29,7 @@ export function createApp() {
   app.use("/categories", categoriesRouter);
   app.use("/products", productsRouter);
   app.use("/orders", ordersRouter);
+  app.use("/cart", cartRouter);
   app.use("/notifications", notificationsRouter);
 
   app.use(errorHandler);

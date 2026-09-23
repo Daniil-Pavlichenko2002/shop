@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { AuthResponse } from '@/entities/user'
+import type { User } from '@/entities/user'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<AuthResponse | null>(null)
-  const setUser = (userValue: AuthResponse) => {
+  const user = ref<User | null>(null)
+
+  const setUser = (userValue: User) => {
     user.value = userValue
   }
 
-  return { user, setUser }
+  const clearUser = () => {
+    user.value = null
+  }
+
+  return { user, setUser, clearUser }
 })

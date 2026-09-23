@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import { Picture } from '@element-plus/icons-vue'
 import type { Product } from '@/entities/products'
+import { formatPrice } from '@/shared'
 
-const { product } = defineProps<{
+const { product, quantity, isLoading } = defineProps<{
   product: Product
+  quantity: number
+  isLoading?: boolean
+}>()
+
+const emit = defineEmits<{
+  add: [productId: number]
 }>()
 </script>
 
@@ -32,19 +39,22 @@ const { product } = defineProps<{
       </h3>
 
       <p class="text-lg font-bold text-gray-900 mb-2">
-        {{ product.price.toLocaleString('ru-RU') }} ₽
+        {{ formatPrice(product.price) }}
       </p>
 
       <span
         class="inline-block self-start text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded px-2 py-0.5 mb-4"
       >
-        В наличии
+        {{ quantity > 0 ? `В корзине: ${quantity}` : 'В наличии' }}
       </span>
     </router-link>
 
     <el-button
       class="mt-auto !w-full !rounded-lg !font-medium !border-blue-200 !text-blue-600 hover:!bg-blue-50"
       size="large"
+      :loading="isLoading"
+      :disabled="product.stock < 1 || quantity >= product.stock"
+      @click.stop="emit('add', product.id)"
     >
       В корзину
     </el-button>

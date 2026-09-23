@@ -57,6 +57,18 @@ Health: `GET /health`
 
 Покупатели видят только `isPublished=true`.
 
+### Корзина (auth)
+Остаток на складе при добавлении в корзину не уменьшается — только при `POST /orders`.
+
+- `GET /cart` — `{ items, totalCount, totalAmount }`
+- `GET /cart/info` — кратко для шапки: `{ totalCount, uniqueItems }`
+- `POST /cart/items` — `{ productId, quantity }` (тот же товар суммируется)
+- `PATCH /cart/items/:productId` — `{ quantity }`
+- `DELETE /cart/items/:productId`
+- `DELETE /cart` — очистить
+
+`totalCount` — сумма количеств, `uniqueItems` — число разных товаров.
+
 ### Заказы (auth)
 - `GET /orders`, `GET /orders?userId=`
 - `POST /orders` — `{ items: [{ productId, quantity }] }` (сервер проверяет stock, уменьшает остаток, пишет snapshot цены/названия, создаёт уведомление)

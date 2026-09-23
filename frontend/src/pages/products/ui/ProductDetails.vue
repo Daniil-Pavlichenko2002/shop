@@ -9,11 +9,15 @@ import {
   ProductInfo,
 } from '@/features/product'
 import { ErrorState } from '@/shared'
+import { useCartActions } from '@/entities/cart'
 
+const { increment, decrement, quantityOf, isUpdating } = useCartActions()
 const router = useRouter()
 const route = useRoute()
 
 const productId = computed(() => Number(route.params.id))
+
+const quantity = computed(() => quantityOf(productId.value))
 
 const {
   data: product,
@@ -53,7 +57,13 @@ const goBack = () => {
     </template>
 
     <template v-else-if="product">
-      <ProductBaseInfo :product="product" />
+      <ProductBaseInfo
+        :quantity="quantity"
+        :product="product"
+        :is-loading="isUpdating"
+        @add="increment(productId)"
+        @remove="decrement(productId)"
+      />
       <ProductInfo :product="product" />
     </template>
   </div>

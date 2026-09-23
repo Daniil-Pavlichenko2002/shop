@@ -1,35 +1,66 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { ref } from 'vue'
-import { useProductsQueries } from '@/entities/products'
-import { ProductCard } from '@/features/product'
+import { ProductOrder, ProductSort } from '@/entities/products'
+import { ProductCard, ProductFilterForm } from '@/features/product'
+import { getProductFilterLabel } from '@/entities/products/lib'
+import { ErrorState } from '@/shared'
+import { useProductsPage } from '@/pages/products/lib'
+import { useCartActions } from '@/entities/cart'
 
-const { data: products, isLoading } = useProductsQueries()
+const { increment, quantityOf, isUpdating } = useCartActions()
 
-const sortValue = ref('price')
-const searchQuery = ref('')
-const currentPage = ref(1)
+const {
+  query,
+  page,
+  sort,
+  drawerVisible,
+  isLoading,
+  isError,
+  products,
+  formFilters,
+  submit,
+  goBack,
+  reset,
+  order,
+  categories,
+  categoriesLoading,
+} = useProductsPage()
 </script>
 
 <template>
   <div class="flex items-center gap-4 mb-6">
     <el-input
-      v-model="searchQuery"
+      v-model="query"
       placeholder="Поиск товаров..."
       size="large"
       class="flex-1"
       :prefix-icon="Search"
     />
     <el-select
-      v-model="sortValue"
+      v-model="sort"
       placeholder="Сортировка"
       size="large"
       class="!w-[220px]"
     >
-      <el-option label="Сортировка: по цене" value="price" />
-      <el-option label="Сортировка: по названию" value="name" />
-      <el-option label="Сортировка: по популярности" value="popular" />
+      <el-option
+        v-for="key in ProductSort"
+        :label="getProductFilterLabel(key)"
+        :value="key"
+      />
     </el-select>
+    <el-radio-group class="mx-3" v-model="order">
+      <el-radio
+        class="-ml-5"
+        v-for="key in ProductOrder"
+        :key="key"
+        :value="key"
+      >
+        {{ key }}
+      </el-radio>
+    </el-radio-group>
+    <el-button type="primary" size="large" @click="drawerVisible = true">
+      Фильтры
+    </el-button>
   </div>
 
   <div
@@ -55,28 +86,66 @@ const currentPage = ref(1)
     </article>
   </div>
 
-  <div
+  <template v-else-if="isError">
+    <ErrorState
+      title="Не удалось загрузить товары"
+      description="Произошла ошибка при загрузке списка товаров. Попробуйте обновить страницу или вернуться к списку товаров."
+      @back="goBack"
+      @retry="$router.go(0)"
+    />
+  </template>
+
+  <TransitionGroup
+    name="products"
+    tag="div"
     v-else
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8"
+    appear
   >
     <ProductCard
-      v-if="products?.length"
-      v-for="product in products"
+      v-for="product in products?.items ?? []"
       :key="product.id"
       :product="product"
+      :quantity="quantityOf(product.id)"
+      :is-loading="isUpdating"
+      @add="increment"
     />
-  </div>
-  <div class="flex justify-center">
+  </TransitionGroup>
+  <div class="flex justify-center mt-2">
     <el-pagination
-      v-model:current-page="currentPage"
-      :page-size="8"
-      :total="32"
+      v-model:current-page="page._page"
+      :page-size="page._limit"
+      :total="products?.totalCount"
       layout="prev, pager, next"
       background
       prev-text="<"
       next-text=">"
     />
   </div>
+  <el-drawer v-model="drawerVisible" title="Фильтры" size="30%" direction="ltr">
+    <ProductFilterForm
+      v-model:form="formFilters"
+      :loading="categoriesLoading"
+      :categories="categories ?? []"
+      @reset="reset"
+      @submit="submit"
+    />
+  </el-drawer>
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.products-enter-from),
+:deep(.products-leave-to) {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+:deep(.products-enter-active),
+:deep(.products-leave-active) {
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+:deep(.products-move) {
+  transition: transform 0.5s ease;
+}
+</style>

@@ -1,13 +1,14 @@
 import type { RouteLocationNormalized } from 'vue-router'
 import { useUserStore } from '@/entities/user/store/userStore'
 import { storeToRefs } from 'pinia'
+import { ACCESS_TOKEN_KEY } from '@/shared'
 
 export const isAuthenticated = (to: RouteLocationNormalized) => {
   const userStore = useUserStore()
   const { user } = storeToRefs(userStore)
 
-  const storedUser = localStorage.getItem('user')
-  const isAuth = !!user.value || !!storedUser
+  const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
+  const isAuth = !!user.value || !!accessToken
 
   if (to.name === 'login' && isAuth) {
     return {

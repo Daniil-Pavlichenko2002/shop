@@ -110,6 +110,8 @@ export async function createOrder(userId: number, items: OrderItemInput[]) {
       },
     });
 
+    await tx.cartItem.deleteMany({ where: { userId } });
+
     await createNotification(
       userId,
       `Заказ #${order.id} создан`,

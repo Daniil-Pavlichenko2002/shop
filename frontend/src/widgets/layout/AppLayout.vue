@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import AppHeader from '@/widgets/header/AppHeader.vue'
+import { useCartQuery } from '@/entities/cart'
+import { useCartSync } from '@/entities/cart/composables/useCartSync.ts'
+
+useCartQuery()
+useCartSync()
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <app-header />
-    <el-container class="max-w-[1440px] w-full mx-auto px-6 py-6 flex-1 !bg-transparent">
+    <el-container
+      class="max-w-[1440px] w-full mx-auto px-6 py-6 flex-1 !bg-transparent"
+    >
       <el-main class="!p-0 !bg-transparent pl-6">
         <router-view />
       </el-main>

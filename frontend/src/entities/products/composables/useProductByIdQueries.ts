@@ -6,7 +6,7 @@ import { Status } from '@/shared'
 
 export const useProductByIdQuery = (id: MaybeRefOrGetter<number | null>) => {
   return useQuery({
-    queryKey: computed(() => productQueryKeys.byId(toValue(id) ?? 0)),
+    queryKey: computed(() => [...productQueryKeys.byId(toValue(id) ?? 0)]),
     queryFn: async (): Promise<Product> => {
       const productId = toValue(id)
       if (!productId) {

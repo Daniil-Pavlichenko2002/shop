@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { Check, ShoppingCart, Warning } from '@element-plus/icons-vue'
 import type { Product } from '@/entities/products'
-import { ref } from 'vue'
 import { formatPrice } from '@/shared'
 
-const { product } = defineProps<{ product: Product }>()
-const quantity = ref(1)
+const { product, quantity } = defineProps<{
+  product: Product
+  quantity: number
+  isLoading: boolean
+}>()
+
+const emit = defineEmits<{
+  add: []
+  remove: []
+}>()
+
 const price = formatPrice(product.price)
 </script>
 
@@ -60,7 +68,6 @@ const price = formatPrice(product.price)
         </el-tag>
       </div>
 
-      <!-- Описание -->
       <div class="mb-8">
         <h2 class="text-lg font-semibold text-gray-900 mb-3">Описание</h2>
 
@@ -69,12 +76,17 @@ const price = formatPrice(product.price)
         </p>
       </div>
 
-      <!-- Покупка -->
       <div class="mt-auto border-t border-gray-200 pt-6">
         <div class="flex flex-col sm:flex-row gap-4">
-          <!-- Количество -->
           <div class="flex items-center">
-            <el-button size="large" :disabled="quantity <= 1"> − </el-button>
+            <el-button
+              size="large"
+              :disabled="quantity < 1"
+              :loading="isLoading"
+              @click="emit('remove')"
+            >
+              −
+            </el-button>
 
             <div
               class="w-14 h-10 flex items-center justify-center text-lg font-medium"
@@ -82,17 +94,23 @@ const price = formatPrice(product.price)
               {{ quantity }}
             </div>
 
-            <el-button size="large" :disabled="quantity >= product.stock">
+            <el-button
+              @click="emit('add')"
+              size="large"
+              :disabled="quantity >= product.stock"
+              :loading="isLoading"
+            >
               +
             </el-button>
           </div>
 
-          <!-- Корзина -->
           <el-button
+            :loading="isLoading"
             type="primary"
             size="large"
             class="flex-1 !h-10"
             :icon="ShoppingCart"
+            @click="emit('add')"
           >
             Добавить в корзину
           </el-button>

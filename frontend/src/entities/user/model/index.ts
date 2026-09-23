@@ -13,10 +13,15 @@ export interface User {
 }
 
 export interface AuthResponse {
-  status: number
-  result: {
-    accessToken: string
-    refreshToken: string
-    user: User
-  }
+  accessToken: string
+  refreshToken: string
+  user: User
+}
+
+export interface RegisterBody {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phone?: string
 }

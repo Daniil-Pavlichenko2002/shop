@@ -6,13 +6,13 @@ export abstract class ApiWrapper {
 
   protected async handleRequest<T>(
     request: Promise<[unknown, unknown]>,
-    transform?: (data: unknown) => T,
+    transform?: (data: unknown, response: unknown) => T,
   ): Promise<CommonResponse<T | CommonError>> {
     const [result, error] = await request
 
     if (result) {
       const payload = (result as { data?: unknown }).data
-      const data = transform ? transform(payload) : (payload as T)
+      const data = transform ? transform(payload, result) : (payload as T)
 
       return new CommonResponse<T>(Status.Success, data)
     }
